@@ -1,3 +1,4 @@
+import { ref, computed } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', () => {
@@ -5,7 +6,9 @@ export const useUserStore = defineStore('user', () => {
    * Current named of the user.
    */
   const savedName = ref('')
+  const accessToken = ref('')
   const previousNames = ref(new Set<string>())
+  const prevTokens = ref(new Set<string>())
 
   const usedNames = computed(() => Array.from(previousNames.value))
   const otherNames = computed(() => usedNames.value.filter(name => name !== savedName.value))
@@ -23,10 +26,18 @@ export const useUserStore = defineStore('user', () => {
     savedName.value = name
   }
 
+  function setAccessToken(token: string) {
+    if (accessToken.value)
+      prevTokens.value.add(accessToken.value)
+
+    accessToken.value = token
+  }
+
   return {
     setNewName,
     otherNames,
     savedName,
+    setAccessToken,
   }
 })
 

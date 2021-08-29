@@ -12,7 +12,7 @@
         <div class="flex flex-col mb-10 md:items-start items-center">
           <div class="w-full h-100">
             <h1 class="text-xl md:text-2xl font-bold leading-tight mt-12">
-              Log in to your account: {{ baseURL }}
+              Log in to your account
             </h1>
 
             <form class="md:mt-6" action="#" method="POST">
@@ -85,21 +85,22 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from '../utils/api'
 // import axios from 'axios'
+
+import { useUserStore } from '~/stores/user'
+// const props = defineProps<{ name: string }>()
+const router = useRouter()
+const user = useUserStore()
+// const { t } = useI18n()
 
 const state = reactive({
   username: '',
   password: '',
 })
-const baseURL = import.meta.env.VITE_APP_BASE_URL
 
 function doLogin() {
-  // const payload = {
-  //   username: state.username,
-  //   password: state.password,
-  //   grant_type: 'password',
-  // }
   const params = new URLSearchParams()
   params.append('username', state.username)
   params.append('password', state.password)
@@ -115,7 +116,10 @@ function doLogin() {
   axios.post('/token', params, config)
     .then((res) => {
       // eslint-disable-next-line no-console
-      console.log(res.data)
+      // console.log(res.data)
+      user.setNewName(state.username)
+      user.setAccessToken(res.data.access_token)
+      router.push('/')
     })
     .catch((err) => {
       // eslint-disable-next-line no-console
